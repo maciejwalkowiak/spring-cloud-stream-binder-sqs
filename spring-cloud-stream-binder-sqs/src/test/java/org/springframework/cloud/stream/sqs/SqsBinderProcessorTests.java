@@ -5,10 +5,10 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.sqs.AmazonSQSAsync;
 import com.amazonaws.services.sqs.AmazonSQSAsyncClientBuilder;
 
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.aws.autoconfigure.context.ContextResourceLoaderAutoConfiguration;
@@ -52,7 +52,8 @@ public class SqsBinderProcessorTests {
 
     static final String CONSUMER_GROUP = "testGroup";
 
-    // TODO: add LocalResource for SQS
+    @ClassRule
+    public static LocalSqsResource localSqs = new LocalSqsResource();
 
     @Autowired
     private TestSource testSource;
@@ -60,7 +61,6 @@ public class SqsBinderProcessorTests {
     public static CountDownLatch countDownLatch = new CountDownLatch(1);
 
     @Test
-    @SuppressWarnings("unchecked")
     public void testProcessorWithSqsBinder() throws Exception {
         Message<Dummy> testMessage = MessageBuilder.withPayload(new Dummy("hello " + new Date()))
                                                     .setHeader("foo", "BAR").build();
@@ -78,10 +78,10 @@ public class SqsBinderProcessorTests {
                                         ContextResourceLoaderAutoConfiguration.class })
     static class ProcessorConfiguration {
 
-        @Bean(destroyMethod = "")
+        @Bean
         public AmazonSQSAsync amazonSQSAsync() {
             AmazonSQSAsyncClientBuilder builder = AmazonSQSAsyncClientBuilder.standard();
-            builder.setEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration("http://localhost:9324",
+            builder.setEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(localSqs.getEndpoint(),
                                                                                         Regions.DEFAULT_REGION.getName()));
             return builder.build();
         }
@@ -114,7 +114,6 @@ public class SqsBinderProcessorTests {
         }
 
     }
-
 
     /**
      * The SCSt contract for testing.
