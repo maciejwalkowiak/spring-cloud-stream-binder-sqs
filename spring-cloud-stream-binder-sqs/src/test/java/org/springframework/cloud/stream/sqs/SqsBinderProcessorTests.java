@@ -33,6 +33,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Date;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE, properties = {
@@ -56,56 +57,16 @@ public class SqsBinderProcessorTests {
     @Autowired
     private TestSource testSource;
 
-    @Autowired
-    private PollableChannel fromProcessorChannel;
-
-    @Autowired
-    private SubscribableChannel errorChannel;
-
-    @Autowired
-    @Qualifier(Processor.INPUT + "." + CONSUMER_GROUP + ".errors")
-    private SubscribableChannel consumerErrorChannel;
-
     public static CountDownLatch countDownLatch = new CountDownLatch(1);
 
     @Test
     @SuppressWarnings("unchecked")
     public void testProcessorWithSqsBinder() throws Exception {
-        Message<String> testMessage = MessageBuilder.withPayload("hello " + new Date())
-                                                    .setHeader("contentType", "text/plain")
+        Message<Dummy> testMessage = MessageBuilder.withPayload(new Dummy("hello " + new Date()))
                                                     .setHeader("foo", "BAR").build();
         this.testSource.toProcessorOutput().send(testMessage);
 
-        countDownLatch.await();
-
-//        Message<Dummy> receive = (Message<Dummy>) this.fromProcessorChannel
-//                .receive(100_000);
-//        assertThat(receive).isNotNull();
-//
-//
-//        assertThat(receive.getPayload()).isEqualTo("FOO".getBytes());
-//
-//        assertThat(receive.getHeaders().get(MessageHeaders.CONTENT_TYPE))
-//                .isEqualTo(MediaType.APPLICATION_JSON_VALUE);
-//
-//        assertThat(receive.getHeaders().get(AwsHeaders.RECEIVED_STREAM))
-//                .isEqualTo(Processor.OUTPUT);
-//        assertThat(receive.getHeaders().get("foo")).isEqualTo("BAR");
-//
-//        BlockingQueue<Message<?>> errorMessages = new LinkedBlockingQueue<>();
-//
-//        this.errorChannel.subscribe(errorMessages::add);
-//        this.consumerErrorChannel.subscribe(errorMessages::add);
-//
-//        this.testSource.toProcessorOutput().send(new GenericMessage<>("junk"));
-//
-//        Message<?> errorMessage1 = errorMessages.poll(10, TimeUnit.SECONDS);
-//        Message<?> errorMessage2 = errorMessages.poll(10, TimeUnit.SECONDS);
-//        assertThat(errorMessage1).isNotNull();
-//        assertThat(errorMessage2).isNotNull();
-//        assertThat(errorMessage1).isSameAs(errorMessage2);
-//        assertThat(errorMessages).isEmpty();
-
+        countDownLatch.await(10, TimeUnit.SECONDS);
     }
 
     /**
@@ -126,8 +87,8 @@ public class SqsBinderProcessorTests {
         }
 
         @StreamListener(Processor.INPUT)
-        public void transform(Message<String> message) {
-            String payload = message.getPayload();
+        public void transform(Message<Dummy> message) {
+            String payload = message.getPayload().getName();
             System.out.println(payload);
 
             countDownLatch.countDown();
@@ -139,12 +100,12 @@ public class SqsBinderProcessorTests {
         }
 
         @Bean
-        public MessageProducer kinesisMessageDriverChannelAdapter() {
-            SqsMessageDrivenChannelAdapter kinesisMessageDrivenChannelAdapter = new SqsMessageDrivenChannelAdapter(
+        public MessageProducer sqsMessageDriverChannelAdapter() {
+            SqsMessageDrivenChannelAdapter sqsMessageDrivenChannelAdapter = new SqsMessageDrivenChannelAdapter(
                     amazonSQSAsync(), Processor.OUTPUT);
-            kinesisMessageDrivenChannelAdapter.setOutputChannel(fromProcessorChannel());
+            sqsMessageDrivenChannelAdapter.setOutputChannel(fromProcessorChannel());
 
-            return kinesisMessageDrivenChannelAdapter;
+            return sqsMessageDrivenChannelAdapter;
         }
 
         @Bean
