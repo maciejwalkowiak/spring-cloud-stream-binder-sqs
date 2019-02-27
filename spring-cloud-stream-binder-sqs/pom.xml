@@ -13,7 +13,7 @@
     <artifactId>spring-cloud-stream-binder-sqs</artifactId>
     <packaging>jar</packaging>
     <name>spring-cloud-stream-binder-sqs</name>
-    <description>AWS Kinesis Binder Implementation</description>
+    <description>AWS SQS Binder Implementation</description>
 
     <dependencies>
         <dependency>

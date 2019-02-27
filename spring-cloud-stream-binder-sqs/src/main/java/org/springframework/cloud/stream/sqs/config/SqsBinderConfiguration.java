@@ -53,10 +53,10 @@ public class SqsBinderConfiguration {
                                                            SqsStreamProvisioner provisioningProvider,
                                                            SqsExtendedBindingProperties sqsExtendedBindingProperties) {
 
-        SqsMessageChannelBinder kinesisMessageChannelBinder = new SqsMessageChannelBinder(amazonSQSAsync,
-                                                                                          provisioningProvider);
-        kinesisMessageChannelBinder.setExtendedBindingProperties(sqsExtendedBindingProperties);
+        SqsMessageChannelBinder smsMessageChannelBinder = new SqsMessageChannelBinder(amazonSQSAsync,
+                                                                                      provisioningProvider);
+        smsMessageChannelBinder.setExtendedBindingProperties(sqsExtendedBindingProperties);
 
-        return kinesisMessageChannelBinder;
+        return smsMessageChannelBinder;
     }
 }

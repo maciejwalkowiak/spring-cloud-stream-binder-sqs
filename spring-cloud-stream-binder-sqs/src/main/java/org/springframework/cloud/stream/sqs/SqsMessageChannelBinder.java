@@ -59,7 +59,9 @@ public class SqsMessageChannelBinder extends
         adapter.setVisibilityTimeout(properties.getExtension().getVisibilityTimeout());
         adapter.setMaxNumberOfMessages(properties.getExtension().getMaxNumberOfMessages());
         adapter.setWaitTimeOut(properties.getExtension().getWaitTimeOut());
-        adapter.setMessageDeletionPolicy(properties.getExtension().getMessageDeletionPolicy());
+        if (properties.getExtension().getMessageDeletionPolicy() != null) {
+            adapter.setMessageDeletionPolicy(properties.getExtension().getMessageDeletionPolicy());
+        }
         adapter.setQueueStopTimeout(properties.getExtension().getQueueStopTimeout());
         return adapter;
     }
