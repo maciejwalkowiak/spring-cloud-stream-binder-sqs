@@ -4,4 +4,4 @@ jobs:
   build:
     steps:
     - checkout
-    - run: mvn -B clean install
+    - run: mvn -B clean install -P spring
