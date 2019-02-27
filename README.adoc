@@ -1,0 +1,9 @@
+= Spring Cloud Stream Binder for AWS SQS
+
+This repository contains the code for the Spring Cloud Stream Binder implementation for AWS SQS.
+
+**It's a very early stage project, not battle-tested, not production-ready**.
+
+You're welcome to leave feedback and PRs are even more than welcome 😀
+
+Read the discussion : https://github.com/spring-cloud/spring-cloud-stream-starters/issues/8[Add a spring-cloud-stream-binder for Amazon SQS]
