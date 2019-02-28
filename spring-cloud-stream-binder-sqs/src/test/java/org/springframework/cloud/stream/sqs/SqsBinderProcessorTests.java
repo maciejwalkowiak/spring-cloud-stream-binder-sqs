@@ -82,7 +82,6 @@ public class SqsBinderProcessorTests {
     static class ProcessorConfiguration {
 
         @Bean
-        @Primary
         AWSStaticCredentialsProvider credentialsProvider() {
             return new AWSStaticCredentialsProvider(new BasicAWSCredentials("",""));
         }
@@ -92,6 +91,7 @@ public class SqsBinderProcessorTests {
             AmazonSQSAsyncClientBuilder builder = AmazonSQSAsyncClientBuilder.standard();
             builder.setEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(localSqs.getEndpoint(),
                                                                                         Regions.DEFAULT_REGION.getName()));
+            builder.setCredentials(credentialsProvider());
             return builder.build();
         }
 
