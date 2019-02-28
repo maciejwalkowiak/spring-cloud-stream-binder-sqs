@@ -21,6 +21,7 @@ import org.springframework.cloud.stream.annotation.Output;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.cloud.stream.messaging.Processor;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.integration.aws.inbound.SqsMessageDrivenChannelAdapter;
 import org.springframework.integration.channel.PublishSubscribeChannel;
 import org.springframework.integration.channel.QueueChannel;
@@ -81,6 +82,7 @@ public class SqsBinderProcessorTests {
     static class ProcessorConfiguration {
 
         @Bean
+        @Primary
         AWSStaticCredentialsProvider credentialsProvider() {
             return new AWSStaticCredentialsProvider(new BasicAWSCredentials("",""));
         }
