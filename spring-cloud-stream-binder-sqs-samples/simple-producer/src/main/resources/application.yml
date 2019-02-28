@@ -1,0 +1,15 @@
+# sets the region so that application can be run outside of ec2 instance
+cloud:
+  aws:
+    region:
+      static: eu-west-1
+
+spring:
+  cloud:
+    stream:
+      bindings:
+        output:
+          destination: my-text-queue
+          content-type: text/plain # messages by default have contentType header set to application/json
+        customOutput:
+          destination: my-json-queue
