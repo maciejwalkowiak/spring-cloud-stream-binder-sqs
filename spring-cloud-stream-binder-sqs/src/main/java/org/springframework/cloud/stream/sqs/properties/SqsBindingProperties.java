@@ -23,4 +23,12 @@ public class SqsBindingProperties implements BinderSpecificPropertiesProvider {
     public SqsProducerProperties getProducer() {
         return producer;
     }
+
+    public void setConsumer(SqsConsumerProperties consumer) {
+        this.consumer = consumer;
+    }
+
+    public void setProducer(SqsProducerProperties producer) {
+        this.producer = producer;
+    }
 }
