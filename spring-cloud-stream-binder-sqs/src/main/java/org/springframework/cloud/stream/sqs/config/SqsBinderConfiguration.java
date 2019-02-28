@@ -20,8 +20,6 @@ import com.amazonaws.services.sqs.AmazonSQSAsync;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.cloud.aws.autoconfigure.context.ContextCredentialsAutoConfiguration;
-import org.springframework.cloud.aws.autoconfigure.context.ContextRegionProviderAutoConfiguration;
 import org.springframework.cloud.stream.binder.Binder;
 import org.springframework.cloud.stream.sqs.SqsMessageChannelBinder;
 import org.springframework.cloud.stream.sqs.properties.SqsBinderConfigurationProperties;
@@ -29,7 +27,6 @@ import org.springframework.cloud.stream.sqs.properties.SqsExtendedBindingPropert
 import org.springframework.cloud.stream.sqs.provisioning.SqsStreamProvisioner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 
 /**
  * The auto-configuration for AWS components and Spring Cloud Stream SQS Binder.
@@ -40,7 +37,6 @@ import org.springframework.context.annotation.Import;
 @ConditionalOnMissingBean(Binder.class)
 @EnableConfigurationProperties({SqsBinderConfigurationProperties.class,
                                 SqsExtendedBindingProperties.class})
-@Import({ContextCredentialsAutoConfiguration.class, ContextRegionProviderAutoConfiguration.class})
 public class SqsBinderConfiguration {
 
     @Bean
@@ -52,11 +48,8 @@ public class SqsBinderConfiguration {
     public SqsMessageChannelBinder sqsMessageChannelBinder(AmazonSQSAsync amazonSQSAsync,
                                                            SqsStreamProvisioner provisioningProvider,
                                                            SqsExtendedBindingProperties sqsExtendedBindingProperties) {
-
-        SqsMessageChannelBinder smsMessageChannelBinder = new SqsMessageChannelBinder(amazonSQSAsync,
-                                                                                      provisioningProvider);
-        smsMessageChannelBinder.setExtendedBindingProperties(sqsExtendedBindingProperties);
-
-        return smsMessageChannelBinder;
+        return new SqsMessageChannelBinder(amazonSQSAsync,
+                                           provisioningProvider,
+                                           sqsExtendedBindingProperties);
     }
 }

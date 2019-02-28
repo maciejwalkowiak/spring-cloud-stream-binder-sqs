@@ -35,11 +35,17 @@ public class SqsMessageChannelBinder extends
 
     private final AmazonSQSAsync amazonSQSAsync;
 
-    private SqsExtendedBindingProperties extendedBindingProperties = new SqsExtendedBindingProperties();
+    private SqsExtendedBindingProperties extendedBindingProperties;
 
     public SqsMessageChannelBinder(AmazonSQSAsync amazonSQSAsync, SqsStreamProvisioner provisioningProvider) {
+        this(amazonSQSAsync, provisioningProvider, new SqsExtendedBindingProperties());
+    }
+
+    public SqsMessageChannelBinder(AmazonSQSAsync amazonSQSAsync, SqsStreamProvisioner provisioningProvider,
+                                   SqsExtendedBindingProperties extendedBindingProperties) {
         super(new String[0], provisioningProvider);
         this.amazonSQSAsync = amazonSQSAsync;
+        this.extendedBindingProperties = extendedBindingProperties;
     }
 
     @Override
