@@ -1,5 +1,7 @@
 package org.springframework.cloud.stream.sqs;
 
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.sqs.AmazonSQSAsync;
@@ -30,6 +32,7 @@ public class LocalSqsResource extends TestWatcher {
         AmazonSQSAsyncClientBuilder builder = AmazonSQSAsyncClientBuilder.standard();
         builder.setEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(endpoint,
                                                                                     Regions.DEFAULT_REGION.getName()));
+        builder.setCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials("", "")));
         this.sqsClient = builder.build();
     }
 

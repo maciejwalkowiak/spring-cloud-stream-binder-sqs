@@ -1,5 +1,7 @@
 package org.springframework.cloud.stream.sqs;
 
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.sqs.AmazonSQSAsync;
@@ -77,6 +79,11 @@ public class SqsBinderProcessorTests {
                                         ContextStackAutoConfiguration.class,
                                         ContextResourceLoaderAutoConfiguration.class })
     static class ProcessorConfiguration {
+
+        @Bean
+        AWSStaticCredentialsProvider credentialsProvider() {
+            return new AWSStaticCredentialsProvider(new BasicAWSCredentials("",""));
+        }
 
         @Bean
         public AmazonSQSAsync amazonSQSAsync() {
