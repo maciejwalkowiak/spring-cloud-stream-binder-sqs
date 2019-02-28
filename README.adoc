@@ -1,5 +1,7 @@
 = Spring Cloud Stream Binder for AWS SQS
 
+image:https://circleci.com/gh/maciejwalkowiak/spring-cloud-stream-binder-sqs.svg?style=svg["CircleCI", link="https://circleci.com/gh/maciejwalkowiak/spring-cloud-stream-binder-sqs"]
+
 This repository contains the code for the Spring Cloud Stream Binder implementation for AWS SQS.
 
 Implementation is heavily inspired by https://github.com/spring-cloud/spring-cloud-stream-binder-aws-kinesis[Spring Cloud Stream Binder Kinesis] and uses https://github.com/spring-cloud/spring-cloud-aws[Spring Cloud AWS] under the hood.
