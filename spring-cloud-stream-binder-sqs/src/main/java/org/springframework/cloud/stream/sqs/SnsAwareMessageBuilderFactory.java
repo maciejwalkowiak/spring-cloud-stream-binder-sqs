@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.integration.support.DefaultMessageBuilderFactory;
 import org.springframework.integration.support.MessageBuilder;
 import org.springframework.messaging.Message;
+import org.springframework.messaging.MessagingException;
 
 import java.io.IOException;
 
@@ -25,7 +26,7 @@ class SnsAwareMessageBuilderFactory extends DefaultMessageBuilderFactory {
             return (MessageBuilder<T>) MessageBuilder.withPayload(unescapeJson(jsonNode.get("Message").toString()))
                                                      .copyHeaders(message.getHeaders());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new MessagingException(message, e);
         }
     }
 
