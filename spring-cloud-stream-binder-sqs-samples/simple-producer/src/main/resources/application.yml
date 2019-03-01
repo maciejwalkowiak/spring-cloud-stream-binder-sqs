@@ -9,7 +9,7 @@ spring:
     stream:
       bindings:
         output:
-          destination: my-text-queue
+          destination: my-text-topic
           content-type: text/plain # messages by default have contentType header set to application/json
         customOutput:
-          destination: my-json-queue
+          destination: my-json-topic
