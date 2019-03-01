@@ -31,11 +31,6 @@ import org.springframework.cloud.stream.sqs.properties.SqsExtendedBindingPropert
 import org.springframework.cloud.stream.sqs.provisioning.SqsStreamProvisioner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
-import org.springframework.core.convert.ConversionService;
-import org.springframework.core.convert.support.GenericConversionService;
-import org.springframework.integration.config.IntegrationConverter;
 
 /**
  * The auto-configuration for AWS components and Spring Cloud Stream SQS Binder.
@@ -73,20 +68,6 @@ public class SqsBinderConfiguration {
                                            amazonSNSAsync,
                                            provisioningProvider,
                                            sqsExtendedBindingProperties);
-    }
-
-    @Bean
-    @IntegrationConverter
-    @Order(Ordered.HIGHEST_PRECEDENCE)
-    ByteArrayToStringConverter byteArrayToStringConverter() {
-        return new ByteArrayToStringConverter();
-    }
-
-    @Bean
-    @IntegrationConverter
-    @Order(Ordered.HIGHEST_PRECEDENCE)
-    StringToByteArrayConverter stringToByteArrayConverter() {
-        return new StringToByteArrayConverter();
     }
 }
 
