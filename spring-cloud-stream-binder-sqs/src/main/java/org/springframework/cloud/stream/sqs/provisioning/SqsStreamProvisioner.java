@@ -47,6 +47,6 @@ public class SqsStreamProvisioner implements
         CreateQueueResult createQueueResult = amazonSQSAsync.createQueue(group);
         CreateTopicResult createTopicResult = amazonSNSAsync.createTopic(name);
         Topics.subscribeQueue(amazonSNSAsync, amazonSQSAsync, createTopicResult.getTopicArn(), createQueueResult.getQueueUrl());
-        return new SqsDestination(group);
+        return new SqsConsumerDestination(group);
     }
 }

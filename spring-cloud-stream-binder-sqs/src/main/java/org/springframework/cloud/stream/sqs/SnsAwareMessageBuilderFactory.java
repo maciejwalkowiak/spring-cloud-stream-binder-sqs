@@ -11,6 +11,10 @@ import org.springframework.messaging.MessagingException;
 import java.io.IOException;
 
 /**
+ * Unwraps message payload from SNS envelope.
+ *
+ * TODO: not sure if that's the right place to do this conversion.
+ *
  * @author Maciej Walkowiak
  */
 class SnsAwareMessageBuilderFactory extends DefaultMessageBuilderFactory {
@@ -30,9 +34,9 @@ class SnsAwareMessageBuilderFactory extends DefaultMessageBuilderFactory {
         }
     }
 
-    private String unescapeJson(String s) {
-        return s.replace("\"{", "{")
-                .replace("}\"", "}")
-                .replace("\\\"", "\"");
+    private String unescapeJson(String jsonString) {
+        return jsonString.replace("\"{", "{")
+                         .replace("}\"", "}")
+                         .replace("\\\"", "\"");
     }
 }

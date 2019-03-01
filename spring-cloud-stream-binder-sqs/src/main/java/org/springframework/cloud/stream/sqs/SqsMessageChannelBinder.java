@@ -19,11 +19,8 @@ import org.springframework.integration.aws.inbound.SqsMessageDrivenChannelAdapte
 import org.springframework.integration.aws.outbound.SnsMessageHandler;
 import org.springframework.integration.channel.AbstractMessageChannel;
 import org.springframework.integration.core.MessageProducer;
-import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
-import org.springframework.messaging.support.ChannelInterceptor;
-import org.springframework.messaging.support.MessageBuilder;
 
 /**
  * The Spring Cloud Stream Binder implementation for AWS SQS.
@@ -79,12 +76,7 @@ public class SqsMessageChannelBinder extends
 
     @Override
     protected void postProcessOutputChannel(MessageChannel outputChannel, ExtendedProducerProperties<SqsProducerProperties> producerProperties) {
-        ((AbstractMessageChannel) outputChannel).addInterceptor(new ChannelInterceptor() {
-            @Override
-            public Message<?> preSend(Message<?> message, MessageChannel channel) {
-                return MessageBuilder.createMessage(new String((byte[]) message.getPayload()), message.getHeaders());
-            }
-        });
+        ((AbstractMessageChannel) outputChannel).addInterceptor(new SnsPayloadConvertingChannelInterceptor());
     }
 
     @Override

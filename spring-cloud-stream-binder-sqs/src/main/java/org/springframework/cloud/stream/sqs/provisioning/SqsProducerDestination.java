@@ -2,6 +2,11 @@ package org.springframework.cloud.stream.sqs.provisioning;
 
 import org.springframework.cloud.stream.provisioning.ProducerDestination;
 
+/**
+ * SQS specific implementation of {@link ProducerDestination}.
+ *
+ * @author Maciej Walkowiak
+ */
 public class SqsProducerDestination implements ProducerDestination {
     private final String name;
     private final String topicArn;
