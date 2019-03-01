@@ -61,7 +61,7 @@ public class LocalAwsResource extends TestWatcher {
 
     private AmazonSNS createSnsClient() {
         AmazonSNSClientBuilder builder = AmazonSNSClientBuilder.standard();
-        builder.setEndpointConfiguration(localstack.getEndpointConfiguration(Service.SQS));
+        builder.setEndpointConfiguration(localstack.getEndpointConfiguration(Service.SNS));
         builder.setCredentials(localstack.getDefaultCredentialsProvider());
         return builder.build();
     }
