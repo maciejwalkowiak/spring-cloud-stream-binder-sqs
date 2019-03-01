@@ -42,12 +42,7 @@ import java.util.concurrent.TimeUnit;
         + SqsBinderProcessorTests.CONSUMER_GROUP,
         "spring.cloud.stream.bindings."
         + SqsBinderProcessorTests.TestSource.TO_PROCESSOR_OUTPUT
-        + ".destination = " + Processor.INPUT,
-        "spring.cloud.stream.sqs.bindings.input.consumer.idleBetweenPolls = 1",
-        "spring.cloud.stream.sqs.bindings.input.producer.useNativeEncoding = true",
-        "spring.cloud.stream.sqs.binder.headers = foo",
-        "spring.cloud.stream.sqs.binder.checkpoint.table = checkpointTable",
-        "spring.cloud.stream.sqs.binder.locks.table = lockTable"})
+        + ".destination = " + Processor.INPUT})
 @DirtiesContext
 public class SqsBinderProcessorTests {
 
@@ -79,6 +74,14 @@ public class SqsBinderProcessorTests {
                                         ContextResourceLoaderAutoConfiguration.class })
     static class ProcessorConfiguration {
 
+        @StreamListener(Processor.INPUT)
+        public void transform(Message<Dummy> message) {
+            String payload = message.getPayload().getName();
+            System.out.println(payload);
+
+            countDownLatch.countDown();
+        }
+
         @Bean
         public AmazonSQSAsync amazonSQSAsync() {
             AmazonSQSAsyncClientBuilder builder = AmazonSQSAsyncClientBuilder.standard();
@@ -95,14 +98,6 @@ public class SqsBinderProcessorTests {
             return builder.build();
         }
 
-        @StreamListener(Processor.INPUT)
-        public void transform(Message<Dummy> message) {
-            String payload = message.getPayload().getName();
-            System.out.println(payload);
-
-            countDownLatch.countDown();
-        }
-
         @Bean(name = Processor.INPUT + "." + CONSUMER_GROUP + ".errors")
         public SubscribableChannel consumerErrorChannel() {
             return new PublishSubscribeChannel();
@@ -113,7 +108,6 @@ public class SqsBinderProcessorTests {
             SqsMessageDrivenChannelAdapter sqsMessageDrivenChannelAdapter = new SqsMessageDrivenChannelAdapter(
                     amazonSQSAsync(), Processor.OUTPUT);
             sqsMessageDrivenChannelAdapter.setOutputChannel(fromProcessorChannel());
-
             return sqsMessageDrivenChannelAdapter;
         }
 
