@@ -1,5 +1,6 @@
 package org.springframework.cloud.stream.sqs;
 
+import com.amazonaws.services.sns.AmazonSNSAsync;
 import com.amazonaws.services.sqs.AmazonSQSAsync;
 
 import org.springframework.cloud.stream.binder.AbstractMessageChannelBinder;
@@ -12,16 +13,14 @@ import org.springframework.cloud.stream.provisioning.ProducerDestination;
 import org.springframework.cloud.stream.sqs.properties.SqsConsumerProperties;
 import org.springframework.cloud.stream.sqs.properties.SqsExtendedBindingProperties;
 import org.springframework.cloud.stream.sqs.properties.SqsProducerProperties;
+import org.springframework.cloud.stream.sqs.provisioning.SqsProducerDestination;
 import org.springframework.cloud.stream.sqs.provisioning.SqsStreamProvisioner;
 import org.springframework.integration.aws.inbound.SqsMessageDrivenChannelAdapter;
-import org.springframework.integration.aws.outbound.SqsMessageHandler;
+import org.springframework.integration.aws.outbound.SnsMessageHandler;
+import org.springframework.integration.channel.AbstractMessageChannel;
 import org.springframework.integration.core.MessageProducer;
-import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
-import org.springframework.messaging.MessageHeaders;
-import org.springframework.messaging.converter.MessageConverter;
-import org.springframework.messaging.support.MessageBuilder;
 
 /**
  * The Spring Cloud Stream Binder implementation for AWS SQS.
@@ -34,29 +33,31 @@ public class SqsMessageChannelBinder extends
         implements ExtendedPropertiesBinder<MessageChannel, SqsConsumerProperties, SqsProducerProperties> {
 
     private final AmazonSQSAsync amazonSQSAsync;
+    private final AmazonSNSAsync amazonSNSAsync;
 
     private SqsExtendedBindingProperties extendedBindingProperties;
 
-    public SqsMessageChannelBinder(AmazonSQSAsync amazonSQSAsync, SqsStreamProvisioner provisioningProvider) {
-        this(amazonSQSAsync, provisioningProvider, new SqsExtendedBindingProperties());
+    public SqsMessageChannelBinder(AmazonSQSAsync amazonSQSAsync, AmazonSNSAsync amazonSNSAsync, SqsStreamProvisioner provisioningProvider) {
+        this(amazonSQSAsync, amazonSNSAsync, provisioningProvider, new SqsExtendedBindingProperties());
     }
 
-    public SqsMessageChannelBinder(AmazonSQSAsync amazonSQSAsync, SqsStreamProvisioner provisioningProvider,
+    public SqsMessageChannelBinder(AmazonSQSAsync amazonSQSAsync, AmazonSNSAsync amazonSNSAsync, SqsStreamProvisioner provisioningProvider,
                                    SqsExtendedBindingProperties extendedBindingProperties) {
         super(new String[0], provisioningProvider);
         this.amazonSQSAsync = amazonSQSAsync;
+        this.amazonSNSAsync = amazonSNSAsync;
         this.extendedBindingProperties = extendedBindingProperties;
     }
 
     @Override
     protected MessageHandler createProducerMessageHandler(ProducerDestination destination, ExtendedProducerProperties<SqsProducerProperties> producerProperties,
                                                           MessageChannel errorChannel) throws Exception {
-        SqsMessageHandler sqsMessageHandler = new SqsMessageHandler(amazonSQSAsync);
-        sqsMessageHandler.setQueue(destination.getName());
-        sqsMessageHandler.setFailureChannel(errorChannel);
-        sqsMessageHandler.setBeanFactory(getBeanFactory());
-        sqsMessageHandler.setMessageConverter(new ByteArrayToStringMessageConverter());
-        return sqsMessageHandler;
+        SqsProducerDestination sqsProducerDestination = (SqsProducerDestination) destination;
+        SnsMessageHandler snsMessageHandler = new SnsMessageHandler(amazonSNSAsync);
+        snsMessageHandler.setTopicArn(sqsProducerDestination.getTopicArn());
+        snsMessageHandler.setFailureChannel(errorChannel);
+        snsMessageHandler.setBeanFactory(getBeanFactory());
+        return snsMessageHandler;
     }
 
     @Override
@@ -69,7 +70,13 @@ public class SqsMessageChannelBinder extends
             adapter.setMessageDeletionPolicy(properties.getExtension().getMessageDeletionPolicy());
         }
         adapter.setQueueStopTimeout(properties.getExtension().getQueueStopTimeout());
+        adapter.setMessageBuilderFactory(new SnsAwareMessageBuilderFactory());
         return adapter;
+    }
+
+    @Override
+    protected void postProcessOutputChannel(MessageChannel outputChannel, ExtendedProducerProperties<SqsProducerProperties> producerProperties) {
+        ((AbstractMessageChannel) outputChannel).addInterceptor(new SnsPayloadConvertingChannelInterceptor());
     }
 
     @Override
@@ -94,18 +101,5 @@ public class SqsMessageChannelBinder extends
 
     public void setExtendedBindingProperties(SqsExtendedBindingProperties extendedBindingProperties) {
         this.extendedBindingProperties = extendedBindingProperties;
-    }
-
-    // TODO: not sure if that's the right way to deal with SQS messages.
-    private static class ByteArrayToStringMessageConverter implements MessageConverter {
-        @Override
-        public Object fromMessage(Message<?> message, Class<?> targetClass) {
-            return new String((byte[]) message.getPayload());
-        }
-
-        @Override
-        public Message<?> toMessage(Object payload, MessageHeaders headers) {
-            return MessageBuilder.createMessage(new String((byte[]) payload), headers);
-        }
     }
 }

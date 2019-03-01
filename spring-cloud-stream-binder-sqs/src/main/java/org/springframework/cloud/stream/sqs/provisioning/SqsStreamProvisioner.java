@@ -1,6 +1,10 @@
 package org.springframework.cloud.stream.sqs.provisioning;
 
+import com.amazonaws.services.sns.AmazonSNSAsync;
+import com.amazonaws.services.sns.model.CreateTopicResult;
+import com.amazonaws.services.sns.util.Topics;
 import com.amazonaws.services.sqs.AmazonSQSAsync;
+import com.amazonaws.services.sqs.model.CreateQueueResult;
 
 import org.springframework.cloud.stream.binder.ExtendedConsumerProperties;
 import org.springframework.cloud.stream.binder.ExtendedProducerProperties;
@@ -22,25 +26,27 @@ public class SqsStreamProvisioner implements
                                   ProvisioningProvider<ExtendedConsumerProperties<SqsConsumerProperties>, ExtendedProducerProperties<SqsProducerProperties>> {
 
     private final AmazonSQSAsync amazonSQSAsync;
+    private final AmazonSNSAsync amazonSNSAsync;
 
-    public SqsStreamProvisioner(AmazonSQSAsync amazonSQSAsync) {
+    public SqsStreamProvisioner(AmazonSQSAsync amazonSQSAsync, AmazonSNSAsync amazonSNSAsync) {
         this.amazonSQSAsync = amazonSQSAsync;
+        this.amazonSNSAsync = amazonSNSAsync;
     }
 
     @Override
     public ProducerDestination provisionProducerDestination(String name,
                                                             ExtendedProducerProperties<SqsProducerProperties> properties) throws ProvisioningException {
-        return provisionDestination(name);
+
+        CreateTopicResult createTopicResult = amazonSNSAsync.createTopic(name);
+        return new SqsProducerDestination(name, createTopicResult.getTopicArn());
     }
 
     @Override
     public ConsumerDestination provisionConsumerDestination(String name, String group,
                                                             ExtendedConsumerProperties<SqsConsumerProperties> properties) throws ProvisioningException {
-        return provisionDestination(name);
-    }
-
-    private SqsDestination provisionDestination(String name) {
-        amazonSQSAsync.createQueue(name);
-        return new SqsDestination(name);
+        CreateQueueResult createQueueResult = amazonSQSAsync.createQueue(group);
+        CreateTopicResult createTopicResult = amazonSNSAsync.createTopic(name);
+        Topics.subscribeQueue(amazonSNSAsync, amazonSQSAsync, createTopicResult.getTopicArn(), createQueueResult.getQueueUrl());
+        return new SqsConsumerDestination(group);
     }
 }

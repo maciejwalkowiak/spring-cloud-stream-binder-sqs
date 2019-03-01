@@ -9,9 +9,10 @@ spring:
     stream:
       bindings:
         output:
-          destination: my-json-queue
+          destination: my-json-topic
         input:
-          destination: my-json-queue
+          destination: my-json-topic
+          group: my-new-queue
       sqs:
         bindings:
           input:

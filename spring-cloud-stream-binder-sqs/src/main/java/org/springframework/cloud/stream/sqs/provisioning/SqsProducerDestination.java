@@ -1,19 +1,19 @@
 package org.springframework.cloud.stream.sqs.provisioning;
 
-import org.springframework.cloud.stream.provisioning.ConsumerDestination;
 import org.springframework.cloud.stream.provisioning.ProducerDestination;
 
 /**
- * SQS specific implementation of {@link ConsumerDestination} and {@link ProducerDestination}.
+ * SQS specific implementation of {@link ProducerDestination}.
  *
  * @author Maciej Walkowiak
  */
-public class SqsDestination implements ConsumerDestination, ProducerDestination {
-
+public class SqsProducerDestination implements ProducerDestination {
     private final String name;
+    private final String topicArn;
 
-    public SqsDestination(String name) {
+    public SqsProducerDestination(String name, String topicArn) {
         this.name = name;
+        this.topicArn = topicArn;
     }
 
     @Override
@@ -24,5 +24,9 @@ public class SqsDestination implements ConsumerDestination, ProducerDestination 
     @Override
     public String getNameForPartition(int partition) {
         return name;
+    }
+
+    public String getTopicArn() {
+        return topicArn;
     }
 }
