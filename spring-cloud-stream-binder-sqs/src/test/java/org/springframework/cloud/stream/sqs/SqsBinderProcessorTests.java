@@ -1,9 +1,7 @@
 package org.springframework.cloud.stream.sqs;
 
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.client.builder.AwsClientBuilder;
-import com.amazonaws.regions.Regions;
+import com.amazonaws.services.sns.AmazonSNSAsync;
+import com.amazonaws.services.sns.AmazonSNSAsyncClientBuilder;
 import com.amazonaws.services.sqs.AmazonSQSAsync;
 import com.amazonaws.services.sqs.AmazonSQSAsyncClientBuilder;
 
@@ -21,7 +19,6 @@ import org.springframework.cloud.stream.annotation.Output;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.cloud.stream.messaging.Processor;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
 import org.springframework.integration.aws.inbound.SqsMessageDrivenChannelAdapter;
 import org.springframework.integration.channel.PublishSubscribeChannel;
 import org.springframework.integration.channel.QueueChannel;
@@ -33,6 +30,7 @@ import org.springframework.messaging.SubscribableChannel;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.testcontainers.containers.localstack.LocalStackContainer.Service;
 
 import java.util.Date;
 import java.util.concurrent.CountDownLatch;
@@ -56,7 +54,7 @@ public class SqsBinderProcessorTests {
     static final String CONSUMER_GROUP = "testGroup";
 
     @ClassRule
-    public static LocalSqsResource localSqs = new LocalSqsResource();
+    public static LocalAwsResource localAwsResource = new LocalAwsResource();
 
     @Autowired
     private TestSource testSource;
@@ -82,16 +80,18 @@ public class SqsBinderProcessorTests {
     static class ProcessorConfiguration {
 
         @Bean
-        AWSStaticCredentialsProvider credentialsProvider() {
-            return new AWSStaticCredentialsProvider(new BasicAWSCredentials("",""));
+        public AmazonSQSAsync amazonSQSAsync() {
+            AmazonSQSAsyncClientBuilder builder = AmazonSQSAsyncClientBuilder.standard();
+            builder.setEndpointConfiguration(localAwsResource.getEndpoint(Service.SQS));
+            builder.setCredentials(localAwsResource.getCredentialsProvider());
+            return builder.build();
         }
 
         @Bean
-        public AmazonSQSAsync amazonSQSAsync() {
-            AmazonSQSAsyncClientBuilder builder = AmazonSQSAsyncClientBuilder.standard();
-            builder.setEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(localSqs.getEndpoint(),
-                                                                                        Regions.DEFAULT_REGION.getName()));
-            builder.setCredentials(credentialsProvider());
+        public AmazonSNSAsync amazonSNSAsync() {
+            AmazonSNSAsyncClientBuilder builder = AmazonSNSAsyncClientBuilder.standard();
+            builder.setEndpointConfiguration(localAwsResource.getEndpoint(Service.SNS));
+            builder.setCredentials(localAwsResource.getCredentialsProvider());
             return builder.build();
         }
 
