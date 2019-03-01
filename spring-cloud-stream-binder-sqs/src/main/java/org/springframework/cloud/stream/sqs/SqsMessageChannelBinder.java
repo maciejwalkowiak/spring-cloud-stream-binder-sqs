@@ -17,9 +17,13 @@ import org.springframework.cloud.stream.sqs.provisioning.SqsProducerDestination;
 import org.springframework.cloud.stream.sqs.provisioning.SqsStreamProvisioner;
 import org.springframework.integration.aws.inbound.SqsMessageDrivenChannelAdapter;
 import org.springframework.integration.aws.outbound.SnsMessageHandler;
+import org.springframework.integration.channel.AbstractMessageChannel;
 import org.springframework.integration.core.MessageProducer;
+import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
+import org.springframework.messaging.support.ChannelInterceptor;
+import org.springframework.messaging.support.MessageBuilder;
 
 /**
  * The Spring Cloud Stream Binder implementation for AWS SQS.
@@ -69,7 +73,18 @@ public class SqsMessageChannelBinder extends
             adapter.setMessageDeletionPolicy(properties.getExtension().getMessageDeletionPolicy());
         }
         adapter.setQueueStopTimeout(properties.getExtension().getQueueStopTimeout());
+        adapter.setMessageBuilderFactory(new SnsAwareMessageBuilderFactory());
         return adapter;
+    }
+
+    @Override
+    protected void postProcessOutputChannel(MessageChannel outputChannel, ExtendedProducerProperties<SqsProducerProperties> producerProperties) {
+        ((AbstractMessageChannel) outputChannel).addInterceptor(new ChannelInterceptor() {
+            @Override
+            public Message<?> preSend(Message<?> message, MessageChannel channel) {
+                return MessageBuilder.createMessage(new String((byte[]) message.getPayload()), message.getHeaders());
+            }
+        });
     }
 
     @Override
