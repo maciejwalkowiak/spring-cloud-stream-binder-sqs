@@ -1,6 +1,10 @@
 package org.springframework.cloud.stream.sqs.provisioning;
 
+import com.amazonaws.services.sns.AmazonSNSAsync;
+import com.amazonaws.services.sns.model.CreateTopicResult;
 import com.amazonaws.services.sqs.AmazonSQSAsync;
+import com.amazonaws.services.sqs.model.CreateQueueResult;
+import com.amazonaws.services.sqs.model.GetQueueAttributesResult;
 
 import org.springframework.cloud.stream.binder.ExtendedConsumerProperties;
 import org.springframework.cloud.stream.binder.ExtendedProducerProperties;
@@ -10,6 +14,8 @@ import org.springframework.cloud.stream.provisioning.ProvisioningException;
 import org.springframework.cloud.stream.provisioning.ProvisioningProvider;
 import org.springframework.cloud.stream.sqs.properties.SqsConsumerProperties;
 import org.springframework.cloud.stream.sqs.properties.SqsProducerProperties;
+
+import java.util.Arrays;
 
 /**
  * The {@link ProvisioningProvider} implementation for Amazon SQS.
@@ -22,25 +28,28 @@ public class SqsStreamProvisioner implements
                                   ProvisioningProvider<ExtendedConsumerProperties<SqsConsumerProperties>, ExtendedProducerProperties<SqsProducerProperties>> {
 
     private final AmazonSQSAsync amazonSQSAsync;
+    private final AmazonSNSAsync amazonSNSAsync;
 
-    public SqsStreamProvisioner(AmazonSQSAsync amazonSQSAsync) {
+    public SqsStreamProvisioner(AmazonSQSAsync amazonSQSAsync, AmazonSNSAsync amazonSNSAsync) {
         this.amazonSQSAsync = amazonSQSAsync;
+        this.amazonSNSAsync = amazonSNSAsync;
     }
 
     @Override
     public ProducerDestination provisionProducerDestination(String name,
                                                             ExtendedProducerProperties<SqsProducerProperties> properties) throws ProvisioningException {
-        return provisionDestination(name);
+
+        CreateTopicResult createTopicResult = amazonSNSAsync.createTopic(name);
+        return new SqsProducerDestination(name, createTopicResult.getTopicArn());
     }
 
     @Override
     public ConsumerDestination provisionConsumerDestination(String name, String group,
                                                             ExtendedConsumerProperties<SqsConsumerProperties> properties) throws ProvisioningException {
-        return provisionDestination(name);
-    }
-
-    private SqsDestination provisionDestination(String name) {
-        amazonSQSAsync.createQueue(name);
-        return new SqsDestination(name);
+        CreateQueueResult createQueueResult = amazonSQSAsync.createQueue(group);
+        GetQueueAttributesResult getQueueAttributesResult = amazonSQSAsync.getQueueAttributes(createQueueResult.getQueueUrl(), Arrays.asList("QueueArn"));
+        CreateTopicResult createTopicResult = amazonSNSAsync.createTopic(name);
+        amazonSNSAsync.subscribe(createTopicResult.getTopicArn(), "sqs", getQueueAttributesResult.getAttributes().get("QueueArn"));
+        return new SqsDestination(group);
     }
 }

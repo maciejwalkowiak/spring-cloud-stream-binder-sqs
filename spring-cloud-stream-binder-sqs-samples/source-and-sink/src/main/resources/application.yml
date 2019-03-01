@@ -12,6 +12,7 @@ spring:
           destination: my-json-queue
         input:
           destination: my-json-queue
+          group: ala-ma-kota
       sqs:
         bindings:
           input:

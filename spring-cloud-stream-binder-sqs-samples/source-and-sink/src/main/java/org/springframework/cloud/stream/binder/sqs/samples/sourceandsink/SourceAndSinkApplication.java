@@ -32,7 +32,7 @@ public class SourceAndSinkApplication {
     @Autowired
     private Source source;
 
-    @Scheduled(fixedRate = 1000L)
+    @Scheduled(fixedRate = 10000L)
     void publishJsonMessageJob() {
         Person payload = new Person("Lena");
         LOGGER.info("Publishing a message with payload: {}", payload);
