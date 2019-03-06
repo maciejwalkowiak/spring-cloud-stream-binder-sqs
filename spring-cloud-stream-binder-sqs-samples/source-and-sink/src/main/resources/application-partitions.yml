@@ -1,0 +1,25 @@
+# sets the region so that application can be run outside of ec2 instance
+cloud:
+  aws:
+    region:
+      static: eu-west-1
+
+spring:
+  cloud:
+    stream:
+      bindings:
+        output:
+          destination: my-json-topic
+          producer:
+            partitionCount: 2
+            partitionKeyExpression: payload.name
+        input:
+          destination: my-json-topic
+          group: my-new-queue
+          consumer:
+            partitioned: true
+      sqs:
+        bindings:
+          input:
+            consumer:
+              maxNumberOfMessages: 10

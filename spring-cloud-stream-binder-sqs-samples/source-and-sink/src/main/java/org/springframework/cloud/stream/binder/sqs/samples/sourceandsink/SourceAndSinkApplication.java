@@ -18,6 +18,10 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
+
 @SpringBootApplication(exclude = ContextStackAutoConfiguration.class)
 @EnableBinding({Source.class, Sink.class})
 @EnableScheduling
@@ -32,9 +36,11 @@ public class SourceAndSinkApplication {
     @Autowired
     private Source source;
 
+    private final List<String> names = Arrays.asList("Wanda", "Lena", "Ada");
+
     @Scheduled(fixedRate = 10000L)
     void publishJsonMessageJob() {
-        Person payload = new Person("Lena");
+        Person payload = new Person(names.get(new Random().nextInt(names.size())));
         LOGGER.info("Publishing a message with payload: {}", payload);
         source.output().send(MessageBuilder.withPayload(payload)
                                            .build());
