@@ -34,7 +34,7 @@ public class SourceAndSinkApplication {
 
     @Scheduled(fixedRate = 10000L)
     void publishJsonMessageJob() {
-        Person payload = new Person("Lena");
+        Person payload = new Person("Wenaad asda sdadasd ");
         LOGGER.info("Publishing a message with payload: {}", payload);
         source.output().send(MessageBuilder.withPayload(payload)
                                            .build());

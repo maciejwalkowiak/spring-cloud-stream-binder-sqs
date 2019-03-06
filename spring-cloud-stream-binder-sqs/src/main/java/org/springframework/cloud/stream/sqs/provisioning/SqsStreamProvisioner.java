@@ -6,6 +6,7 @@ import com.amazonaws.services.sns.util.Topics;
 import com.amazonaws.services.sqs.AmazonSQSAsync;
 import com.amazonaws.services.sqs.model.CreateQueueResult;
 
+import org.springframework.cloud.stream.binder.BinderHeaders;
 import org.springframework.cloud.stream.binder.ExtendedConsumerProperties;
 import org.springframework.cloud.stream.binder.ExtendedProducerProperties;
 import org.springframework.cloud.stream.provisioning.ConsumerDestination;
@@ -44,9 +45,22 @@ public class SqsStreamProvisioner implements
     @Override
     public ConsumerDestination provisionConsumerDestination(String name, String group,
                                                             ExtendedConsumerProperties<SqsConsumerProperties> properties) throws ProvisioningException {
-        CreateQueueResult createQueueResult = amazonSQSAsync.createQueue(group);
+
+        String queueName = properties.isPartitioned() ? group + "-" + properties.getInstanceIndex() : group;
+
+        CreateQueueResult createQueueResult = amazonSQSAsync.createQueue(queueName);
         CreateTopicResult createTopicResult = amazonSNSAsync.createTopic(name);
-        Topics.subscribeQueue(amazonSNSAsync, amazonSQSAsync, createTopicResult.getTopicArn(), createQueueResult.getQueueUrl());
-        return new SqsConsumerDestination(group);
+        String subscriptionArn = Topics.subscribeQueue(amazonSNSAsync,
+                                                       amazonSQSAsync,
+                                                       createTopicResult.getTopicArn(),
+                                                       createQueueResult.getQueueUrl());
+
+        if (properties.isPartitioned()) {
+            amazonSNSAsync.setSubscriptionAttributes(subscriptionArn,
+                                                     "FilterPolicy",
+                                                     "{\"" + BinderHeaders.PARTITION_HEADER + "\": [" + properties.getInstanceIndex() + "]}");
+        }
+
+        return new SqsConsumerDestination(queueName);
     }
 }
