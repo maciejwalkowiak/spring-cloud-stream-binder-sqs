@@ -10,9 +10,14 @@ spring:
       bindings:
         output:
           destination: my-json-topic
+          producer:
+            partitionCount: 2
+            partitionKeyExpression: payload.name
         input:
           destination: my-json-topic
           group: my-new-queue
+          consumer:
+            partitioned: true
       sqs:
         bindings:
           input:
