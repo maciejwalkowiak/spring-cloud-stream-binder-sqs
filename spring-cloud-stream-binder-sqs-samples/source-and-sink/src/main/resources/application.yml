@@ -18,3 +18,6 @@ spring:
           input:
             consumer:
               maxNumberOfMessages: 10
+              queue:
+                visibilityTimeout: 5
+                delaySeconds: 60
