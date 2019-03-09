@@ -6,6 +6,7 @@ import com.amazonaws.services.sns.model.Subscription;
 import com.amazonaws.services.sns.model.Topic;
 import com.amazonaws.services.sqs.AmazonSQSAsync;
 import com.amazonaws.services.sqs.AmazonSQSAsyncClientBuilder;
+import com.amazonaws.services.sqs.model.QueueAttributeName;
 
 import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
@@ -156,6 +157,23 @@ public class SqsStreamProvisionerTest {
         List<String> topicArns = listTopicsArns();
         assertThat(topicArns).hasSize(1);
         assertThat(sns.getTopicAttributes(topicArns.get(0)).getAttributes().get("TopicArn")).endsWith("topic-name");
+    }
+
+    // consumer provisioning
+    @Test
+    public void createsSqsQueueWithAttributes() {
+        ExtendedConsumerProperties<SqsConsumerProperties> consumerProperties = new ExtendedConsumerProperties<>(new SqsConsumerProperties());
+        consumerProperties.getExtension().getQueue().setDelaySeconds(10);
+
+        sqsStreamProvisioner.provisionConsumerDestination("topic-name",
+                                                          "group-name",
+                                                          consumerProperties);
+
+        List<String> queueUrls = sqs.listQueues("group-name").getQueueUrls();
+        assertThat(queueUrls).hasSize(1);
+        assertThat(sqs.getQueueAttributes(queueUrls.get(0), Arrays.asList(QueueAttributeName.DelaySeconds.toString()))
+                      .getAttributes()
+                      .get(QueueAttributeName.DelaySeconds.toString())).isEqualTo("10");
     }
 
     @NotNull

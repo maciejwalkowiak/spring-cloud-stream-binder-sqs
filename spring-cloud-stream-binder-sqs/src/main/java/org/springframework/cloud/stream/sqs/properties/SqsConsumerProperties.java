@@ -44,6 +44,9 @@ public class SqsConsumerProperties {
      */
     private SqsMessageDeletionPolicy messageDeletionPolicy;
 
+    /**
+     * Properties set on a queue during creation.
+     */
     private QueueProperties queue = new QueueProperties();
 
     public Integer getMaxNumberOfMessages() {
