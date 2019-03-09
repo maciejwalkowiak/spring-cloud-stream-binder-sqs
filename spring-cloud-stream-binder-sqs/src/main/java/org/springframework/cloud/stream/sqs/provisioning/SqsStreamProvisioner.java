@@ -20,7 +20,7 @@ import org.springframework.cloud.stream.sqs.properties.SqsProducerProperties;
 import java.util.Collections;
 
 /**
- * The {@link ProvisioningProvider} implementation for Amazon SQS.
+ * The {@link ProvisioningProvider} implementation for Amazon SQS. Provisions both SNS topics and SQS queues.
  *
  * @author Maciej Walkowiak
  */
