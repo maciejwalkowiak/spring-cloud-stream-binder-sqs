@@ -4,6 +4,7 @@ import com.amazonaws.services.sns.AmazonSNSAsync;
 import com.amazonaws.services.sns.model.CreateTopicResult;
 import com.amazonaws.services.sns.util.Topics;
 import com.amazonaws.services.sqs.AmazonSQSAsync;
+import com.amazonaws.services.sqs.model.CreateQueueRequest;
 import com.amazonaws.services.sqs.model.CreateQueueResult;
 
 import org.springframework.cloud.stream.binder.BinderHeaders;
@@ -16,10 +17,10 @@ import org.springframework.cloud.stream.provisioning.ProvisioningProvider;
 import org.springframework.cloud.stream.sqs.properties.SqsConsumerProperties;
 import org.springframework.cloud.stream.sqs.properties.SqsProducerProperties;
 
+import java.util.Collections;
+
 /**
  * The {@link ProvisioningProvider} implementation for Amazon SQS.
- *
- * TODO: enable applying queue properties.
  *
  * @author Maciej Walkowiak
  */
@@ -48,7 +49,10 @@ public class SqsStreamProvisioner implements
 
         String queueName = properties.isPartitioned() ? group + "-" + properties.getInstanceIndex() : group;
 
-        CreateQueueResult createQueueResult = amazonSQSAsync.createQueue(queueName);
+        CreateQueueRequest createQueueRequest = new CreateQueueRequest(queueName)
+                .withAttributes(properties.getExtension().getQueue() != null ? properties.getExtension().getQueue().toQueueAttributes() : Collections.emptyMap());
+        CreateQueueResult createQueueResult = amazonSQSAsync.createQueue(createQueueRequest);
+
         CreateTopicResult createTopicResult = amazonSNSAsync.createTopic(name);
         String subscriptionArn = Topics.subscribeQueue(amazonSNSAsync,
                                                        amazonSQSAsync,
