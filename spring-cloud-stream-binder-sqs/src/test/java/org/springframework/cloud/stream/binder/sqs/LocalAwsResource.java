@@ -1,4 +1,4 @@
-package org.springframework.cloud.stream.sqs;
+package org.springframework.cloud.stream.binder.sqs;
 
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.client.builder.AwsClientBuilder;

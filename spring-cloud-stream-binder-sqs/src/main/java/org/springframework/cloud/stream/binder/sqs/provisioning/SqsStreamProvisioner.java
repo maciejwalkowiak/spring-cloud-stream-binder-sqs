@@ -1,4 +1,4 @@
-package org.springframework.cloud.stream.sqs.provisioning;
+package org.springframework.cloud.stream.binder.sqs.provisioning;
 
 import com.amazonaws.services.sns.AmazonSNSAsync;
 import com.amazonaws.services.sns.model.CreateTopicResult;
@@ -14,8 +14,8 @@ import org.springframework.cloud.stream.provisioning.ConsumerDestination;
 import org.springframework.cloud.stream.provisioning.ProducerDestination;
 import org.springframework.cloud.stream.provisioning.ProvisioningException;
 import org.springframework.cloud.stream.provisioning.ProvisioningProvider;
-import org.springframework.cloud.stream.sqs.properties.SqsConsumerProperties;
-import org.springframework.cloud.stream.sqs.properties.SqsProducerProperties;
+import org.springframework.cloud.stream.binder.sqs.properties.SqsConsumerProperties;
+import org.springframework.cloud.stream.binder.sqs.properties.SqsProducerProperties;
 
 import java.util.Collections;
 

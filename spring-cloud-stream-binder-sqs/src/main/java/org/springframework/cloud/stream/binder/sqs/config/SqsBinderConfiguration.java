@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.cloud.stream.sqs.config;
+package org.springframework.cloud.stream.binder.sqs.config;
 
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.services.sns.AmazonSNSAsync;
@@ -25,10 +25,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.aws.core.region.RegionProvider;
 import org.springframework.cloud.stream.binder.Binder;
-import org.springframework.cloud.stream.sqs.SqsMessageChannelBinder;
-import org.springframework.cloud.stream.sqs.properties.SqsBinderConfigurationProperties;
-import org.springframework.cloud.stream.sqs.properties.SqsExtendedBindingProperties;
-import org.springframework.cloud.stream.sqs.provisioning.SqsStreamProvisioner;
+import org.springframework.cloud.stream.binder.sqs.SqsMessageChannelBinder;
+import org.springframework.cloud.stream.binder.sqs.properties.SqsExtendedBindingProperties;
+import org.springframework.cloud.stream.binder.sqs.provisioning.SqsStreamProvisioner;
+import org.springframework.cloud.stream.binder.sqs.properties.SqsBinderConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

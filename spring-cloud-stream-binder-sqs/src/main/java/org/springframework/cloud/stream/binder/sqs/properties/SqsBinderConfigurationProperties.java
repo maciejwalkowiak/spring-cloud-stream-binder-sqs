@@ -1,4 +1,4 @@
-package org.springframework.cloud.stream.sqs.properties;
+package org.springframework.cloud.stream.binder.sqs.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

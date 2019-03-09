@@ -1,4 +1,4 @@
-package org.springframework.cloud.stream.sqs;
+package org.springframework.cloud.stream.binder.sqs;
 
 import com.amazonaws.services.sns.AmazonSNSAsync;
 import com.amazonaws.services.sqs.AmazonSQSAsync;
@@ -8,13 +8,13 @@ import org.springframework.cloud.stream.binder.BinderSpecificPropertiesProvider;
 import org.springframework.cloud.stream.binder.ExtendedConsumerProperties;
 import org.springframework.cloud.stream.binder.ExtendedProducerProperties;
 import org.springframework.cloud.stream.binder.ExtendedPropertiesBinder;
+import org.springframework.cloud.stream.binder.sqs.provisioning.SqsStreamProvisioner;
 import org.springframework.cloud.stream.provisioning.ConsumerDestination;
 import org.springframework.cloud.stream.provisioning.ProducerDestination;
-import org.springframework.cloud.stream.sqs.properties.SqsConsumerProperties;
-import org.springframework.cloud.stream.sqs.properties.SqsExtendedBindingProperties;
-import org.springframework.cloud.stream.sqs.properties.SqsProducerProperties;
-import org.springframework.cloud.stream.sqs.provisioning.SqsProducerDestination;
-import org.springframework.cloud.stream.sqs.provisioning.SqsStreamProvisioner;
+import org.springframework.cloud.stream.binder.sqs.properties.SqsConsumerProperties;
+import org.springframework.cloud.stream.binder.sqs.properties.SqsExtendedBindingProperties;
+import org.springframework.cloud.stream.binder.sqs.properties.SqsProducerProperties;
+import org.springframework.cloud.stream.binder.sqs.provisioning.SqsProducerDestination;
 import org.springframework.integration.aws.inbound.SqsMessageDrivenChannelAdapter;
 import org.springframework.integration.aws.outbound.SnsMessageHandler;
 import org.springframework.integration.channel.AbstractMessageChannel;

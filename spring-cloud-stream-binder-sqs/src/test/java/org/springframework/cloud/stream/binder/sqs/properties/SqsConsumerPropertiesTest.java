@@ -1,9 +1,8 @@
-package org.springframework.cloud.stream.sqs.properties;
+package org.springframework.cloud.stream.binder.sqs.properties;
 
 import com.amazonaws.services.sqs.model.QueueAttributeName;
 
 import org.junit.Test;
-import org.springframework.cloud.stream.sqs.properties.SqsConsumerProperties.QueueProperties;
 
 import java.util.Map;
 
@@ -14,7 +13,7 @@ public class SqsConsumerPropertiesTest {
     @Test
     public void createsQueueAttributeForSuppliedKey() {
         SqsConsumerProperties sqsConsumerProperties = new SqsConsumerProperties();
-        QueueProperties queue = sqsConsumerProperties.getQueue();
+        SqsConsumerProperties.QueueProperties queue = sqsConsumerProperties.getQueue();
         queue.setDelaySeconds(10);
         queue.setMaximumMessageSize(1000);
 
