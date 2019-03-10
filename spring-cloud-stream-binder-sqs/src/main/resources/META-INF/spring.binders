@@ -1,1 +1,1 @@
-sqs: SqsBinderConfiguration
+sqs: org.springframework.cloud.stream.binder.sqs.config.SqsBinderConfiguration
