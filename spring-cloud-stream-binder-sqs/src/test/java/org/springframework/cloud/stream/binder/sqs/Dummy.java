@@ -1,4 +1,4 @@
-package org.springframework.cloud.stream.sqs;
+package org.springframework.cloud.stream.binder.sqs;
 
 public class Dummy {
     private String name;

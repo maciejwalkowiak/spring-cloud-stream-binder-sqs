@@ -1,4 +1,4 @@
-package org.springframework.cloud.stream.sqs;
+package org.springframework.cloud.stream.binder.sqs;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

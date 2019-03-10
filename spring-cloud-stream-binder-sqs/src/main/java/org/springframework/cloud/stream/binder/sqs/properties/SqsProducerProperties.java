@@ -1,4 +1,4 @@
-package org.springframework.cloud.stream.sqs.properties;
+package org.springframework.cloud.stream.binder.sqs.properties;
 
 /**
  * The SQS-specific producer binding configuration properties.

@@ -1,12 +1,11 @@
-package org.springframework.cloud.stream.sqs.properties;
+package org.springframework.cloud.stream.binder.sqs.properties;
 
 import org.springframework.cloud.stream.binder.BinderSpecificPropertiesProvider;
 
 /**
  * The SQS-specific binding configuration properties.
  *
- * @author Peter Oates
- * @author Artem Bilan
+ * @author Maciej Walkowiak
  */
 public class SqsBindingProperties implements BinderSpecificPropertiesProvider {
 

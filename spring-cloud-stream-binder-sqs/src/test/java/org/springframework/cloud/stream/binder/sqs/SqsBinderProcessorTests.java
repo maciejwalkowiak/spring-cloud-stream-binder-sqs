@@ -1,4 +1,4 @@
-package org.springframework.cloud.stream.sqs;
+package org.springframework.cloud.stream.binder.sqs;
 
 import com.amazonaws.services.sns.AmazonSNSAsync;
 import com.amazonaws.services.sns.AmazonSNSAsyncClientBuilder;

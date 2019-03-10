@@ -1,4 +1,4 @@
-package org.springframework.cloud.stream.sqs.provisioning;
+package org.springframework.cloud.stream.binder.sqs.provisioning;
 
 import com.amazonaws.services.sns.AmazonSNSAsync;
 import com.amazonaws.services.sns.AmazonSNSAsyncClientBuilder;
@@ -14,9 +14,9 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.springframework.cloud.stream.binder.ExtendedConsumerProperties;
 import org.springframework.cloud.stream.binder.ExtendedProducerProperties;
-import org.springframework.cloud.stream.sqs.LocalAwsResource;
-import org.springframework.cloud.stream.sqs.properties.SqsConsumerProperties;
-import org.springframework.cloud.stream.sqs.properties.SqsProducerProperties;
+import org.springframework.cloud.stream.binder.sqs.LocalAwsResource;
+import org.springframework.cloud.stream.binder.sqs.properties.SqsConsumerProperties;
+import org.springframework.cloud.stream.binder.sqs.properties.SqsProducerProperties;
 import org.testcontainers.containers.localstack.LocalStackContainer;
 
 import java.util.Arrays;

@@ -1,4 +1,4 @@
-package org.springframework.cloud.stream.sqs.provisioning;
+package org.springframework.cloud.stream.binder.sqs.provisioning;
 
 import org.springframework.cloud.stream.provisioning.ProducerDestination;
 
