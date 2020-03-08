@@ -18,6 +18,8 @@ import org.springframework.cloud.stream.binder.sqs.properties.SqsConsumerPropert
 import org.springframework.cloud.stream.binder.sqs.properties.SqsProducerProperties;
 
 import java.util.Collections;
+import java.util.Random;
+import java.util.stream.Collectors;
 
 /**
  * The {@link ProvisioningProvider} implementation for Amazon SQS. Provisions both SNS topics and SQS queues.
@@ -48,6 +50,12 @@ public class SqsStreamProvisioner implements
                                                             ExtendedConsumerProperties<SqsConsumerProperties> properties) throws ProvisioningException {
 
         String queueName = properties.isPartitioned() ? group + "-" + properties.getInstanceIndex() : group;
+
+        if (group == null || group.isEmpty()) { // anonymous queue
+            queueName = name + "_anonymous_" + new Random().ints(22, 0, 62)
+                .mapToObj(x -> String.valueOf(x < 36 ? Character.forDigit(x, 36) : (char)('A' - 36 + x)))
+                .collect(Collectors.joining());
+        }
 
         CreateQueueRequest createQueueRequest = new CreateQueueRequest(queueName)
                 .withAttributes(properties.getExtension().getQueue() != null ? properties.getExtension().getQueue().toQueueAttributes() : Collections.emptyMap());
